@@ -1,5 +1,6 @@
 use aws_config::Region;
 use aws_sdk_sts::{config::Credentials, Config};
+use inquire::{self, validator::Validation};
 use anyhow::{Error, anyhow};
 use crate::{
     types::{AwsProfiles, CredentialsProfile, PermanentCredentials, TemporaryCredentials},
@@ -9,6 +10,13 @@ use crate::{
 #[::tokio::main]
 pub async fn get_new_creds(profile_name: &Option<String>, config_path: &Option<String>) -> Result<(), Error> {
     let session_token= inquire::Text::new("MFA Code:")
+        .with_validator(|input: &str| {
+            if input.trim().is_empty() {
+                Ok(Validation::Invalid("field cannot be empty".into()))
+            } else {
+                Ok(Validation::Valid)
+            }
+        })
         .prompt()
         .map_err(|_| anyhow!("failed to retrieve MFA Code"))?;
 
