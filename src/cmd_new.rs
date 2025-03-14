@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs, path::Path, process};
 use anyhow::{anyhow, Error};
-use inquire;
+use inquire::{self, validator::Validation};
 use crate::{
     types::{AwsProfiles, CredentialsProfile, FileError, PermanentCredentials, TemporaryCredentials},
     utils::{check_config_path, get_default_config_path, parse_creds, write_creds},
@@ -29,7 +29,7 @@ pub fn create_profile(profile_name: &String, config_path: &Option<String>) -> Re
                 let overwrite_response = inquire::Confirm::new(&format!("WARNING: Profile `{}` already exists. Would you like to overwrite?", profile_name))
                 .with_default(false)
                 .prompt()
-                .map_err(|_| anyhow!("Failed to parse overwrite_response"))?;
+                .map_err(|_| anyhow!("failed to parse overwrite_response"))?;
 
                 // If the user chooses not to overwrite, exit the process
                 if !overwrite_response {
@@ -54,29 +54,42 @@ pub fn create_profile(profile_name: &String, config_path: &Option<String>) -> Re
         }
     };
 
+    // Ensures that the inquire::<String> methods below won't accept a blank string
+    let string_validator = |input: &str| {
+        if input.trim().is_empty() {
+            Ok(Validation::Invalid("Name cannot be empty".into()))
+        } else {
+            Ok(Validation::Valid)
+        }
+    };
+
     let default = inquire::Confirm::new(&format!("Would you like to set profile `{profile_name}` as default?"))
         .with_default(true)
         .prompt()
-        .map_err(|_| anyhow!("Failed to get user confirmation for default"))?;
+        .map_err(|_| anyhow!("failed to get user confirmation for default"))?;
 
     let access_key_id = inquire::Password::new("AWS_ACCESS_KEY_ID:")
         .without_confirmation()
+        .with_validator(string_validator)
         .prompt()
-        .map_err(|_| anyhow!("Failed to get user input for access_key_id"))?;
+        .map_err(|_| anyhow!("failed to get user input for access_key_id"))?;
 
     let secret_access_key = inquire::Password::new("AWS_SECRET_ACCESS_KEY:")
         .without_confirmation()
+        .with_validator(string_validator)
         .prompt()
-        .map_err(|_| anyhow!("Failed to get user input for secret_access_key"))?;
+        .map_err(|_| anyhow!("failed to get user input for secret_access_key"))?;
 
     let mfa_serial_number = inquire::Text::new("AWS MFA Device Serial Number:")
+        .with_validator(string_validator)
         .prompt()
-        .map_err(|_| anyhow!("Failed to get user input for mfa_serial_number"))?;
+        .map_err(|_| anyhow!("failed to get user input for mfa_serial_number"))?;
 
     let region = inquire::Text::new("AWS Region:")
         .with_default("us-east-1")
+        .with_validator(string_validator)
         .prompt()
-        .map_err(|_| anyhow!("Failed to get user input for region"))?;
+        .map_err(|_| anyhow!("failed to get user input for region"))?;
 
     // If the user wants the new profile to be set as default...
     if default {
