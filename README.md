@@ -37,7 +37,7 @@ terraform apply
 
 # Design
 
-Once created, the configuration by default will be found at `~/.config/aws-creds/cred.json`. Below is the structure of the file:
+Once created, the configuration by default will be found at `~/.config/aws-creds/creds.json`. Below is the structure of the file:
 
 ```json
 {
