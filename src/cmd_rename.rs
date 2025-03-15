@@ -8,10 +8,10 @@ pub fn rename_profile(
     let path = check_config_path(config_path)?;
     let mut all_creds = parse_creds(&path)?;
     let profile_creds = all_creds
-    .profiles
-    .get(old_profile)
-    .ok_or_else(|| anyhow::anyhow!("profile not found"))?
-    .clone();
+        .profiles
+        .get(old_profile)
+        .ok_or_else(|| anyhow::anyhow!("profile not found"))?
+        .clone();
 
     // If the profile was the default, update the default profile name
     if all_creds.default == old_profile {
