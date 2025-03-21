@@ -7,6 +7,31 @@ This is a command line tool that makes it easier to retrieve and use AWS tempora
 - Prompts the user to generate new credentials when tokens have expired
 - Allows the user to export a profile's credentials as environment variables (i.e. `AWS_ACCESS_KEY_ID=youraccesskeyid`)
 
+# Install
+
+### Download the release
+
+You can download the binary from the [releases page](https://github.com/asteurer/aws-creds/releases).
+
+To set up your environment like mine, feel free to run the commands below:
+
+```bash
+# Download the compressed file
+wget https://github.com/asteurer/aws-creds/releases/download/<VERSION>/aws-creds-linux-amd64-<RELEASE>.tar.gz
+
+# Uncompress the file
+tar -xvf aws-creds-linux-amd64-<RELEASE>.tar.gz
+
+# Move the uncompressed file to a folder in your PATH
+sudo mv aws-creds /usr/local/bin
+```
+
+### Build from source
+
+Make sure that you have [Cargo](https://www.rust-lang.org/tools/install) installed.
+
+Clone the repository and navigate to the root of the repository. Once there, you can run `cargo build --release`, and find the binary at `target/release/aws-creds`.
+
 # Examples
 
 ### Using the temporary credentials
