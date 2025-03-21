@@ -5,9 +5,10 @@ pub fn list_profiles(config_path: &Option<String>) -> Result<(), anyhow::Error>{
     let all_creds = parse_creds(&path)?;
     let mut output: Vec<String> = Vec::new();
 
-    for (name, cred) in all_creds.profiles.into_iter() {
+    for profile in all_creds.profiles {
+        let name = profile.profile_name;
         let status = match get_temp_cred_status(
-            &cred.temporary_credentials.expiration
+            &profile.temporary_credentials.expiration
         )? {
             TempCredStatus::Empty => "<- empty",
             TempCredStatus::Expired => "<- expired",
