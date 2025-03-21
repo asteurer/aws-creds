@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PROGRAM_NAME: aws-creds
+  OS_ARCH: linux-amd64
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Build
+      run: cargo build --verbose
+
+    - name: Run tests
+      run: cargo test --verbose
+
+    - name: Build release
+      if: github.ref == 'refs/heads/main'
+      run: cargo build --release
+
+    - name: Set release version
+      run: echo "RELEASE_VERSION=$(cargo metadata --format-version=1 | jq -r '.packages[] | select(.name == "aws-creds") | .version')" >> $GITHUB_ENV
+
+    - name: Create package
+      if: github.ref == 'refs/heads/main'
+      run: |
+        mkdir -p release
+        cp target/release/${{ env.PROGRAM_NAME }} release/
+        tar -czf ${{ env.PROGRAM_NAME }}-${{ env.OS_ARCH }}-${{ env.RELEASE_VERSION }}.tar.gz -C release .
+
+    - name: Upload release artifact
+      if: github.ref == 'refs/heads/main'
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-package
+        path: ${{ env.PROGRAM_NAME }}-${{ env.OS_ARCH }}-${{ env.RELEASE_VERSION }}.tar.gz
+        retention-days: 5
+
+    - name: Check if release exists
+      if: github.ref == 'refs/heads/main'
+      id: check_release
+      run: |
+        if gh release view ${{ env.RELEASE_VERSION }} --repo ${{ github.repository }} > /dev/null 2>&1; then
+          echo "RELEASE_EXISTS=true" >> $GITHUB_OUTPUT
+        else
+          echo "RELEASE_EXISTS=false" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GH_TOKEN: ${{ github.token }}
+
+    - name: Create versioned release
+      if: github.ref == 'refs/heads/main' && steps.check_release.outputs.RELEASE_EXISTS == 'false'
+      run: gh release create ${{ env.RELEASE_VERSION }} --title "${{ env.RELEASE_VERSION }}" --repo ${{ github.repository }} ./*.tar.gz
+      env:
+        GH_TOKEN: ${{ github.token }}
