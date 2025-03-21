@@ -42,19 +42,22 @@ Once created, the configuration by default will be found at `~/.config/aws-creds
 ```json
 {
     "default": "YOUR_DEFAULT_PROFILE_NAME",
-    "YOUR_PROFILE_NAME": {
-        "permanent_credentials": {
-            "access_key_id": "",
-            "secret_access_key": "",
-            "mfa_serial_number": "",
-            "region": "",
-        },
-        "temporary_credentials": {
-            "access_key_id": "",
-            "secret_access_key": "",
-            "session_token": "",
-            "expiration": "",
+    "profiles": [
+       {
+            "profile_name": "YOUR_PROFILE_NAME",
+            "permanent_credentials": {
+                "access_key_id": "",
+                "secret_access_key": "",
+                "mfa_serial_number": "",
+                "region": "",
+            },
+            "temporary_credentials": {
+                "access_key_id": "",
+                "secret_access_key": "",
+                "session_token": "",
+                "expiration": "",
+            }
         }
-    }
+    ]
 }
 ```

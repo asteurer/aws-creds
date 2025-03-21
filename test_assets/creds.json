@@ -1,1 +1,35 @@
-{"default":"test1","test2":{"permanent_credentials":{"access_key_id":"not_used","secret_access_key":"not_used","mfa_serial_number":"not_used","region":"not_used"},"temporary_credentials":{"access_key_id":"test2_temp_access_key_id","secret_access_key":"test2_temp_secret_access_key","session_token":"test2_temp_session_token","expiration":"test2_temp_expiration"}},"test1":{"permanent_credentials":{"access_key_id":"not_used","secret_access_key":"not_used","mfa_serial_number":"not_used","region":"not_used"},"temporary_credentials":{"access_key_id":"test1_temp_access_key_id","secret_access_key":"test1_temp_secret_access_key","session_token":"test1_temp_session_token","expiration":"test1_temp_expiration"}}}
+{
+	"default": "test1",
+	"profiles": [
+        {
+            "profile_name": "test2",
+		    "permanent_credentials": {
+                "access_key_id": "not_used",
+                "secret_access_key": "not_used",
+                "mfa_serial_number": "not_used",
+                "region": "not_used"
+		    },
+            "temporary_credentials": {
+                "access_key_id": "test2_temp_access_key_id",
+                "secret_access_key": "test2_temp_secret_access_key",
+                "session_token": "test2_temp_session_token",
+                "expiration": "2100-03-21T12:00:00Z"
+            }
+        },
+        {
+            "profile_name": "test1",
+            "permanent_credentials": {
+                "access_key_id": "not_used",
+                "secret_access_key": "not_used",
+                "mfa_serial_number": "not_used",
+                "region": "not_used"
+            },
+            "temporary_credentials": {
+                "access_key_id": "test1_temp_access_key_id",
+                "secret_access_key": "test1_temp_secret_access_key",
+                "session_token": "test1_temp_session_token",
+                "expiration": "2100-03-21T12:00:00Z"
+            }
+        }
+    ]
+}

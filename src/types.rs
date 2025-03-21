@@ -1,8 +1,8 @@
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CredentialsProfile {
+    pub profile_name: String,
     pub permanent_credentials: PermanentCredentials,
     pub temporary_credentials: TemporaryCredentials,
 }
@@ -26,15 +26,13 @@ pub struct TemporaryCredentials {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AwsProfiles{
     pub default: String,
-
-    #[serde(flatten)]
-    pub profiles: HashMap<String, CredentialsProfile>,
+    pub profiles: Vec<CredentialsProfile>,
 }
 
 // This custom type makes it possible to handle file not found errors with more precision
 #[derive(thiserror::Error, Debug)]
 pub enum FileError {
-    #[error("unable to find file")]
+    #[error("unable to find file: please check the config path and try again")]
     NotFound,
 
     #[error("ERROR: {message}")]

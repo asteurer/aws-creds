@@ -7,23 +7,20 @@ pub fn rename_profile(
 ) -> Result<(), anyhow::Error> {
     let path = check_config_path(config_path)?;
     let mut all_creds = parse_creds(&path)?;
-    let profile_creds = all_creds
-        .profiles
-        .get(old_profile)
-        .ok_or_else(|| anyhow::anyhow!("profile not found"))?
-        .clone();
 
-    // If the profile was the default, update the default profile name
-    if all_creds.default == old_profile {
-        all_creds.default = new_profile.to_owned();
+    for p in all_creds.profiles.iter_mut() {
+        if p.profile_name == old_profile {
+            p.profile_name = new_profile.to_string();
+
+            if old_profile == all_creds.default {
+                all_creds.default = new_profile.to_owned();
+            }
+
+            write_creds(&all_creds, &path)?;
+
+            return Ok(println!("Profile `{}` renamed to `{}`", old_profile, new_profile));
+        }
     }
 
-    all_creds
-        .profiles
-        .remove(old_profile)
-        .expect("Failed to remove old_profile");
-
-    all_creds.profiles.insert(new_profile.to_string(), profile_creds);
-
-    Ok(write_creds(&all_creds, &path)?)
+    Err(anyhow::anyhow!("profile `{}` doesn't exist", old_profile))
 }
